@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+             
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    
+	<bean id="dataSource" class="com.timbreAnalyse.Model.proxool.ExtendsProxoolDataSource">
+        <property name="alias" value="mall"></property>
+        <property name="delegateProperties">
+            <value>user=${jdbc_mall.username},password=${jdbc_mall.password}</value>
+        </property>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="driver" value="${jdbc.driverClassName}"/>
+        <property name="driverUrl" value="${jdbc.url}"/>           
+        <property name="maximumConnectionCount" value="${jdbc.maximumConnectionCount}"></property>
+		<property name="maximumActiveTime" value="${jdbc.maximumActiveTime}"></property>
+		<property name="maximumConnectionLifetime" value="${jdbc.maximumConnectionLifetime}"></property>
+		<property name="prototypeCount" value="${jdbc.prototypeCount}"></property>
+		<property name="houseKeepingSleepTime" value="${jdbc.houseKeepingSleepTime}"></property>
+		<property name="simultaneousBuildThrottle" value="${jdbc.simultaneousBuildThrottle}"></property>
+		<property name="houseKeepingTestSql" value="${jdbc.houseKeepingTestSql}"></property>
+		<property name="verbose" value="${jdbc.verbose}"></property>
+		<property name="statistics" value="${jdbc.statistics}"></property>
+		<property name="statisticsLogLevel" value="${jdbc.statisticsLogLevel}"></property>
+    </bean>
+	
+	<!--mybatis与Spring整合  -->
+	<bean id="paginationInterceptor" class="com.imxiaomai.mall.admin.model.pagination.PaginationInterceptor">
+		<property name="dialect">
+			<bean class="com.imxiaomai.mall.admin.model.dialect.MySQLDialect" />
+		</property>
+	</bean>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:SqlMapConfig.xml"/>
+	    <property name="dataSource" ref="dataSource"/> 
+		<property name="plugins">
+	 		<array>
+	 			<ref bean="paginationInterceptor"/>
+	 		</array>
+	 	</property>
+    </bean>
+    
+    <!-- 配置sqlSessionTemplate --> 
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">  
+        <constructor-arg index="0" ref="sqlSessionFactory" />  
+    </bean> 
+</beans>

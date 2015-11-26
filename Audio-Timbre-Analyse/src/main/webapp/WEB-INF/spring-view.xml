@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xsi:schemaLocation="
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+	
+
+	<!-- ========================= resource folders ========================= -->
+	<!--
+		<mvc:resources location="/s/css/" mapping="/s/css/**"/>
+		<mvc:resources location="/s/js/" mapping="/s/js/**"/>
+	-->
+
+	<!-- ========================= spring context ========================= -->
+
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="cache" value="true"/>
+        <property name="suffix" value=".jsp"/>
+        <property name="prefix" value="/page/"/>
+	</bean>
+
+	<context:annotation-config/>
+	<context:component-scan base-package="com.timbreAnalyse.*"/>
+	<mvc:default-servlet-handler/>
+
+	<!-- ========================= <mvc:annotation-driven /> ========================= -->
+
+	<mvc:annotation-driven />
+	<!-- 不能用mvc:annotation-driven的原因是，会自动注册validator，而hibernate依赖的slf4j库过旧，导致无法初始化 -->
+	<!-- 参考：http://stackoverflow.com/questions/8425788/how-to-force-disable-jsr-303-support-in-spring-3 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="order" value="0"/>
+	</bean>
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer"/>
+		</property>
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg type="java.nio.charset.Charset" value="UTF-8"/>
+				</bean>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+			</list>
+		</property>
+	</bean> -->
+	<!-- java.lang.ClassNotFoundException: javax.validation.ValidatorFactory -->
+	<!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
+<!-- 	<bean id="conversion-service" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"/>
+ -->
+</beans>
